@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Biplane", "biplane-mono\Biplane.csproj", "{BF92C32C-CE38-4A61-A550-149C8816EBCC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HeightmapPipeline", "HeightmapPipeline\HeightmapPipeline.csproj", "{B87D9A43-40D8-4A71-8438-F0B2F8B4401B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
+		Debug|Xbox 360 = Debug|Xbox 360
+		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
+		Release|Xbox 360 = Release|Xbox 360
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BF92C32C-CE38-4A61-A550-149C8816EBCC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF92C32C-CE38-4A61-A550-149C8816EBCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF92C32C-CE38-4A61-A550-149C8816EBCC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BF92C32C-CE38-4A61-A550-149C8816EBCC}.Debug|x86.Build.0 = Debug|Any CPU
+		{BF92C32C-CE38-4A61-A550-149C8816EBCC}.Debug|Xbox 360.ActiveCfg = Debug|Any CPU
+		{BF92C32C-CE38-4A61-A550-149C8816EBCC}.Debug|Xbox 360.Build.0 = Debug|Any CPU
+		{BF92C32C-CE38-4A61-A550-149C8816EBCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF92C32C-CE38-4A61-A550-149C8816EBCC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF92C32C-CE38-4A61-A550-149C8816EBCC}.Release|x86.ActiveCfg = Release|Any CPU
+		{BF92C32C-CE38-4A61-A550-149C8816EBCC}.Release|x86.Build.0 = Release|Any CPU
+		{BF92C32C-CE38-4A61-A550-149C8816EBCC}.Release|Xbox 360.ActiveCfg = Release|Any CPU
+		{BF92C32C-CE38-4A61-A550-149C8816EBCC}.Release|Xbox 360.Build.0 = Release|Any CPU
+		{B87D9A43-40D8-4A71-8438-F0B2F8B4401B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B87D9A43-40D8-4A71-8438-F0B2F8B4401B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B87D9A43-40D8-4A71-8438-F0B2F8B4401B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B87D9A43-40D8-4A71-8438-F0B2F8B4401B}.Debug|x86.Build.0 = Debug|Any CPU
+		{B87D9A43-40D8-4A71-8438-F0B2F8B4401B}.Debug|Xbox 360.ActiveCfg = Debug|Any CPU
+		{B87D9A43-40D8-4A71-8438-F0B2F8B4401B}.Debug|Xbox 360.Build.0 = Debug|Any CPU
+		{B87D9A43-40D8-4A71-8438-F0B2F8B4401B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B87D9A43-40D8-4A71-8438-F0B2F8B4401B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B87D9A43-40D8-4A71-8438-F0B2F8B4401B}.Release|x86.ActiveCfg = Release|Any CPU
+		{B87D9A43-40D8-4A71-8438-F0B2F8B4401B}.Release|x86.Build.0 = Release|Any CPU
+		{B87D9A43-40D8-4A71-8438-F0B2F8B4401B}.Release|Xbox 360.ActiveCfg = Release|Any CPU
+		{B87D9A43-40D8-4A71-8438-F0B2F8B4401B}.Release|Xbox 360.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6A5B5E91-755D-407B-AA08-668CF4C3BCFE}
+	EndGlobalSection
+EndGlobal
