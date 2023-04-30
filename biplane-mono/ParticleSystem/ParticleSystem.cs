@@ -12,6 +12,7 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Graphics.PackedVector;
 #endregion
 
 namespace Biplane.ParticleSystem
@@ -40,7 +41,7 @@ namespace Biplane.ParticleSystem
         // Shortcuts for accessing frequently changed effect parameters.
         EffectParameter effectViewParameter;
         EffectParameter effectProjectionParameter;
-        EffectParameter effectViewportHeightParameter;
+        EffectParameter effectViewportScaleParameter;
         EffectParameter effectTimeParameter;
 
 
@@ -55,6 +56,9 @@ namespace Biplane.ParticleSystem
 
         // Vertex declaration describes the format of our ParticleVertex structure.
         VertexDeclaration vertexDeclaration;
+
+        // Index buffer turns sets of four vertices into particle quads (pairs of triangles).
+        IndexBuffer indexBuffer;
 
 
         // The particles array and vertex buffer are treated as a circular queue.
@@ -169,7 +173,15 @@ namespace Biplane.ParticleSystem
         {
             InitializeSettings(settings);
 
-            particles = new ParticleVertex[settings.MaxParticles];
+            particles = new ParticleVertex[settings.MaxParticles * 4];
+
+            for (int i = 0; i < settings.MaxParticles; i++)
+            {
+                particles[i * 4 + 0].Corner = new Vector2(-1, -1);
+                particles[i * 4 + 1].Corner = new Vector2(1, -1);
+                particles[i * 4 + 2].Corner = new Vector2(1, 1);
+                particles[i * 4 + 3].Corner = new Vector2(-1, 1);
+            }
 
             base.Initialize();
         }
@@ -192,11 +204,26 @@ namespace Biplane.ParticleSystem
             vertexDeclaration = new VertexDeclaration(ParticleVertex.VertexElements);
 
             // Create a dynamic vertex buffer.
-            int size = ParticleVertex.SizeInBytes * particles.Length;
+            vertexBuffer = new DynamicVertexBuffer(GraphicsDevice, vertexDeclaration,
+                        settings.MaxParticles * 4, BufferUsage.WriteOnly);
 
-            vertexBuffer = new DynamicVertexBuffer(GraphicsDevice, vertexDeclaration, size,
-                                                   BufferUsage.WriteOnly |
-                                                   BufferUsage.None);
+            // Create and populate the index buffer.
+            ushort[] indices = new ushort[settings.MaxParticles * 6];
+
+            for (int i = 0; i < settings.MaxParticles; i++)
+            {
+                indices[i * 6 + 0] = (ushort)(i * 4 + 0);
+                indices[i * 6 + 1] = (ushort)(i * 4 + 1);
+                indices[i * 6 + 2] = (ushort)(i * 4 + 2);
+
+                indices[i * 6 + 3] = (ushort)(i * 4 + 0);
+                indices[i * 6 + 4] = (ushort)(i * 4 + 2);
+                indices[i * 6 + 5] = (ushort)(i * 4 + 3);
+            }
+
+            indexBuffer = new IndexBuffer(GraphicsDevice, typeof(ushort), indices.Length, BufferUsage.WriteOnly);
+
+            indexBuffer.SetData(indices);
         }
 
 
@@ -220,7 +247,7 @@ namespace Biplane.ParticleSystem
             // Look up shortcuts for parameters that change every frame.
             effectViewParameter = parameters["View"];
             effectProjectionParameter = parameters["Projection"];
-            effectViewportHeightParameter = parameters["ViewportHeight"];
+            effectViewportScaleParameter = parameters["ViewportScale"];
             effectTimeParameter = parameters["CurrentTime"];
 
             // Set the values of parameters that do not change.
@@ -316,7 +343,7 @@ namespace Biplane.ParticleSystem
                 // Move the particle from the active to the retired queue.
                 firstActiveParticle++;
 
-                if (firstActiveParticle >= particles.Length)
+                if (firstActiveParticle >= settings.MaxParticles)
                     firstActiveParticle = 0;
             }
         }
@@ -344,7 +371,7 @@ namespace Biplane.ParticleSystem
                 // Move the particle from the retired to the free queue.
                 firstRetiredParticle++;
 
-                if (firstRetiredParticle >= particles.Length)
+                if (firstRetiredParticle >= settings.MaxParticles)
                     firstRetiredParticle = 0;
             }
         }
@@ -377,16 +404,17 @@ namespace Biplane.ParticleSystem
                 {
                     SetParticleRenderStates(device.BlendState, device.DepthStencilState);
 
-                    // Set an effect parameter describing the viewport size. This is needed
-                    // to convert particle sizes into screen space point sprite sizes.
-                    effectViewportHeightParameter.SetValue(device.Viewport.Height);
+                    // Set an effect parameter describing the viewport size. This is
+                    // needed to convert particle sizes into screen space point sizes.
+                    effectViewportScaleParameter.SetValue(new Vector2(0.5f / device.Viewport.AspectRatio, -0.5f));
 
                     // Set an effect parameter describing the current time. All the vertex
                     // shader particle animation is keyed off this value.
                     effectTimeParameter.SetValue(currentTime);
 
-                    // Set the particle vertex buffer and vertex declaration.
+                    // Set the particle vertex and index buffer.
                     device.SetVertexBuffer(vertexBuffer);
+                    device.Indices = indexBuffer;
 
                     // Activate the particle effect.
 
@@ -398,23 +426,23 @@ namespace Biplane.ParticleSystem
                         {
                             // If the active particles are all in one consecutive range,
                             // we can draw them all in a single call.
-                            device.DrawPrimitives(PrimitiveType.LineList,
-                                                  firstActiveParticle,
-                                                  firstFreeParticle - firstActiveParticle);
+                            device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0,
+                                firstActiveParticle * 4, (firstFreeParticle - firstActiveParticle) * 4,
+                                firstActiveParticle * 6, (firstFreeParticle - firstActiveParticle) * 2);
                         }
                         else
                         {
                             // If the active particle range wraps past the end of the queue
                             // back to the start, we must split them over two draw calls.
-                            device.DrawPrimitives(PrimitiveType.LineList,
-                                                  firstActiveParticle,
-                                                  particles.Length - firstActiveParticle);
+                            device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0,
+                                firstActiveParticle * 4, (settings.MaxParticles - firstActiveParticle) * 4,
+                                firstActiveParticle * 6, (settings.MaxParticles - firstActiveParticle) * 2);
 
                             if (firstFreeParticle > 0)
                             {
-                                device.DrawPrimitives(PrimitiveType.PointList,
-                                                      0,
-                                                      firstFreeParticle);
+                                device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0,
+                                    0, firstFreeParticle * 4,
+                                    0, firstFreeParticle * 2);
                             }
                         }
                     }
@@ -435,35 +463,6 @@ namespace Biplane.ParticleSystem
         /// </summary>
         void AddNewParticlesToVertexBuffer()
         {
-            int stride = ParticleVertex.SizeInBytes;
-
-            if (firstNewParticle < firstFreeParticle)
-            {
-                // If the new particles are all in one consecutive range,
-                // we can upload them all in a single call.
-                vertexBuffer.SetData(firstNewParticle * stride, particles,
-                                     firstNewParticle,
-                                     firstFreeParticle - firstNewParticle,
-                                     stride, SetDataOptions.NoOverwrite);
-            }
-            else
-            {
-                // If the new particle range wraps past the end of the queue
-                // back to the start, we must split them over two upload calls.
-                vertexBuffer.SetData(firstNewParticle * stride, particles,
-                                     firstNewParticle,
-                                     particles.Length - firstNewParticle,
-                                     stride, SetDataOptions.NoOverwrite);
-
-                if (firstFreeParticle > 0)
-                {
-                    vertexBuffer.SetData(0, particles,
-                                         0, firstFreeParticle,
-                                         stride, SetDataOptions.NoOverwrite);
-                }
-            }
-
-            // Move the particles we just uploaded from the new to the active queue.
             firstNewParticle = firstFreeParticle;
         }
 
@@ -473,6 +472,9 @@ namespace Biplane.ParticleSystem
         /// </summary>
         void SetParticleRenderStates(BlendState blendState, DepthStencilState depthStencilState)
         {
+            // Enable the depth buffer (so particles will not be visible through
+            // solid objects like the ground plane), but disable depth writes
+            // (so particles will not obscure other particles).
             blendState = BlendState.AlphaBlend;
             depthStencilState = DepthStencilState.DepthRead;
         }
@@ -502,7 +504,7 @@ namespace Biplane.ParticleSystem
             // Figure out where in the circular queue to allocate the new particle.
             int nextFreeParticle = firstFreeParticle + 1;
 
-            if (nextFreeParticle >= particles.Length)
+            if (nextFreeParticle >= settings.MaxParticles)
                 nextFreeParticle = 0;
 
             // If there are no free particles, we just have to give up.
@@ -536,10 +538,13 @@ namespace Biplane.ParticleSystem
                                            (byte)random.Next(255));
 
             // Fill in the particle vertex structure.
-            particles[firstFreeParticle].Position = position;
-            particles[firstFreeParticle].Velocity = velocity;
-            particles[firstFreeParticle].Random = randomValues;
-            particles[firstFreeParticle].Time = currentTime;
+            for (int i = 0; i < 4; i++)
+            {
+                particles[firstFreeParticle * 4 + i].Position = position;
+                particles[firstFreeParticle * 4 + i].Velocity = velocity;
+                particles[firstFreeParticle * 4 + i].Random = randomValues;
+                particles[firstFreeParticle * 4 + i].Time = currentTime;
+            }
 
             firstFreeParticle = nextFreeParticle;
         }
