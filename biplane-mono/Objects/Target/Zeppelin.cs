@@ -60,7 +60,7 @@ namespace Biplane.Objects.Target
             this.missleCount = 0;
 
             this.useXEffects = true;
-            this.scale = 3.0f;
+            this.scale = 300.0f;
 
             this.playerIndex = 0;
             this.useGamePad = false;

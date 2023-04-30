@@ -106,7 +106,7 @@
 /processorParam:TextureFormat=Compressed
 /build:LCD.spritefont
 
-#begin Models/baron.3ds
+#begin Models/baron.fbx
 /importer:FbxImporter
 /processor:ModelProcessor
 /processorParam:ColorKeyColor=0,0,0,0
@@ -123,9 +123,9 @@
 /processorParam:Scale=1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
-/build:Models/baron.3ds
+/build:Models/baron.fbx
 
-#begin Models/battleship.3ds
+#begin Models/battleship.dae
 /importer:FbxImporter
 /processor:ModelProcessor
 /processorParam:ColorKeyColor=0,0,0,0
@@ -136,13 +136,13 @@
 /processorParam:PremultiplyTextureAlpha=True
 /processorParam:PremultiplyVertexColors=True
 /processorParam:ResizeTexturesToPowerOfTwo=False
-/processorParam:RotationX=0
+/processorParam:RotationX=-90
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
 /processorParam:Scale=1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
-/build:Models/battleship.3ds
+/build:Models/battleship.dae
 
 #begin Models/bomb.fbx
 /importer:FbxImporter
@@ -733,7 +733,7 @@
 /processorParam:TextureFormat=Compressed
 /build:Models/debrisz6.fbx
 
-#begin Models/factory.fbx
+#begin Models/factory.dae
 /importer:FbxImporter
 /processor:ModelProcessor
 /processorParam:ColorKeyColor=0,0,0,0
@@ -750,7 +750,7 @@
 /processorParam:Scale=1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
-/build:Models/factory.fbx
+/build:Models/factory.dae
 
 #begin Models/missle.fbx
 /importer:FbxImporter
@@ -790,7 +790,7 @@
 /processorParam:TextureFormat=Compressed
 /build:Models/parachute.3ds
 
-#begin Models/pea_proj.3ds
+#begin Models/pea_proj.fbx
 /importer:FbxImporter
 /processor:ModelProcessor
 /processorParam:ColorKeyColor=0,0,0,0
@@ -807,7 +807,7 @@
 /processorParam:Scale=1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
-/build:Models/pea_proj.3ds
+/build:Models/pea_proj.fbx
 
 #begin Models/plane.fbx
 /importer:FbxImporter
@@ -839,7 +839,7 @@
 /processorParam:PremultiplyTextureAlpha=True
 /processorParam:PremultiplyVertexColors=True
 /processorParam:ResizeTexturesToPowerOfTwo=False
-/processorParam:RotationX=-90
+/processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
 /processorParam:Scale=1
@@ -885,7 +885,7 @@
 /processorParam:TextureFormat=Compressed
 /build:Models/waves.fbx
 
-#begin Models/zepp.3ds
+#begin Models/zepp.dae
 /importer:FbxImporter
 /processor:ModelProcessor
 /processorParam:ColorKeyColor=0,0,0,0
@@ -902,7 +902,7 @@
 /processorParam:Scale=1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
-/build:Models/zepp.3ds
+/build:Models/zepp.dae
 
 #begin ParticleSystem/explosion.png
 /importer:TextureImporter

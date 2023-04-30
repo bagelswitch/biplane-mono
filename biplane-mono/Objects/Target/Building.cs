@@ -50,7 +50,7 @@ namespace Biplane.Objects.Target
             this.size = 8000;
 
             this.useXEffects = true;
-            this.scale = 2.0f;
+            this.scale = 100.0f;
 
             this.playerIndex = 0;
             this.useGamePad = false;

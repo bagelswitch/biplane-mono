@@ -234,7 +234,7 @@ namespace Biplane.Objects
         protected void drawModelFbxEffect(Model model, Matrix view, Matrix projection, Matrix localWorld)
         {
             gd = game.GraphicsDevice;
-            gd.BlendState = BlendState.Opaque;
+            gd.BlendState = BlendState.AlphaBlend;
             gd.DepthStencilState = DepthStencilState.Default;
 
             foreach (ModelMesh mesh in model.Meshes)
@@ -254,7 +254,7 @@ namespace Biplane.Objects
                             basicEffect.World = effectWorld;
                             basicEffect.View = view;
                             basicEffect.Projection = projection;
-                            basicEffect.Alpha = 1;
+                            //basicEffect.Alpha = 1;
                         }
                         else
                         {

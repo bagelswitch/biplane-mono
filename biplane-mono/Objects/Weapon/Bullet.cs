@@ -41,6 +41,9 @@ namespace Biplane.Objects.Weapon
 
             modelName = "Models\\pea_proj";
 
+            //this.useXEffects = true;
+            this.scale = 0.5f;
+
             this.playerIndex = 0;
             this.useGamePad = false;
             this.useKeyboard = false;

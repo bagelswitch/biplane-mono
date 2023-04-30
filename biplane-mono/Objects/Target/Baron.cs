@@ -57,7 +57,7 @@ namespace Biplane.Objects.Target
             modelName = "Models\\baron";
 
             this.useXEffects = true;
-            this.scale = 3.0f;
+            this.scale = 1.0f;
 
             this.playerIndex = 0;
             this.useGamePad = false;
