@@ -32,6 +32,9 @@ namespace Biplane.ParticleSystem
         // For loading the effect and particle texture.
         ContentManager content;
 
+        // For accessing spritebatch
+        Game game;
+
 
         // Custom effect for drawing point sprite particles. This computes the particle
         // animation entirely in the vertex shader: no per-particle CPU work required!
@@ -162,6 +165,7 @@ namespace Biplane.ParticleSystem
         protected ParticleSystem(Game game, ContentManager content)
             : base(game)
         {
+            this.game = game;
             this.content = content;
         }
 
@@ -182,7 +186,7 @@ namespace Biplane.ParticleSystem
                 particles[i * 4 + 2].Corner = new Vector2(1, 1);
                 particles[i * 4 + 3].Corner = new Vector2(-1, 1);
             }
-
+            
             base.Initialize();
         }
 
@@ -201,7 +205,7 @@ namespace Biplane.ParticleSystem
         {
             LoadParticleEffect();
 
-            vertexDeclaration = new VertexDeclaration(ParticleVertex.VertexElements);
+            vertexDeclaration = ParticleVertex.VertexDeclaration;
 
             // Create a dynamic vertex buffer.
             vertexBuffer = new DynamicVertexBuffer(GraphicsDevice, vertexDeclaration,
@@ -332,13 +336,15 @@ namespace Biplane.ParticleSystem
             while (firstActiveParticle != firstNewParticle)
             {
                 // Is this particle old enough to retire?
-                float particleAge = currentTime - particles[firstActiveParticle].Time;
+                // We multiply the active particle index by four, because each
+                // particle consists of a quad that is made up of four vertices.
+                float particleAge = currentTime - particles[firstActiveParticle * 4].Time;
 
                 if (particleAge < particleDuration)
                     break;
 
                 // Remember the time at which we retired this particle.
-                particles[firstActiveParticle].Time = drawCounter;
+                particles[firstActiveParticle * 4].Time = drawCounter;
 
                 // Move the particle from the active to the retired queue.
                 firstActiveParticle++;
@@ -360,7 +366,9 @@ namespace Biplane.ParticleSystem
             {
                 // Has this particle been unused long enough that
                 // the GPU is sure to be finished with it?
-                int age = drawCounter - (int)particles[firstRetiredParticle].Time;
+                // We multiply the retired particle index by four, because each
+                // particle consists of a quad that is made up of four vertices.
+                int age = drawCounter - (int)particles[firstRetiredParticle * 4].Time;
 
                 // The GPU is never supposed to get more than 2 frames behind the CPU.
                 // We add 1 to that, just to be safe in case of buggy drivers that
@@ -376,84 +384,77 @@ namespace Biplane.ParticleSystem
             }
         }
 
-        
         /// <summary>
         /// Draws the particle system.
         /// </summary>
         public override void Draw(GameTime gameTime)
         {
-            if (!((BiplaneGame)Game).gameState.paused)
+            GraphicsDevice device = GraphicsDevice;
+
+            // Restore the vertex buffer contents if the graphics device was lost.
+            if (vertexBuffer.IsContentLost)
             {
-                GraphicsDevice device = GraphicsDevice;
+                vertexBuffer.SetData(particles);
+            }
 
-                // Restore the vertex buffer contents if the graphics device was lost.
-                if (vertexBuffer.IsContentLost)
+            // If there are any particles waiting in the newly added queue,
+            // we'd better upload them to the GPU ready for drawing.
+            if (firstNewParticle != firstFreeParticle)
+            {
+                AddNewParticlesToVertexBuffer();
+            }
+
+            // If there are any active particles, draw them now!
+            if (firstActiveParticle != firstFreeParticle)
+            {
+                device.BlendState = settings.BlendState;
+                device.DepthStencilState = settings.DepthStencilState;
+
+                // Set an effect parameter describing the viewport size. This is
+                // needed to convert particle sizes into screen space point sizes.
+                effectViewportScaleParameter.SetValue(new Vector2(0.5f / device.Viewport.AspectRatio, -0.5f));
+
+                // Set an effect parameter describing the current time. All the vertex
+                // shader particle animation is keyed off this value.
+                effectTimeParameter.SetValue(currentTime);
+
+                // Set the particle vertex and index buffer.
+                device.SetVertexBuffer(vertexBuffer);
+                device.Indices = indexBuffer;
+
+                // Activate the particle effect.
+                foreach (EffectPass pass in particleEffect.CurrentTechnique.Passes)
                 {
-                    vertexBuffer.SetData(particles);
-                }
+                    pass.Apply();
 
-                // If there are any particles waiting in the newly added queue,
-                // we'd better upload them to the GPU ready for drawing.
-                if (firstNewParticle != firstFreeParticle)
-                {
-                    AddNewParticlesToVertexBuffer();
-                }
-
-                // If there are any active particles, draw them now!
-                if (firstActiveParticle != firstFreeParticle)
-                {
-                    SetParticleRenderStates(device.BlendState, device.DepthStencilState);
-
-                    // Set an effect parameter describing the viewport size. This is
-                    // needed to convert particle sizes into screen space point sizes.
-                    effectViewportScaleParameter.SetValue(new Vector2(0.5f / device.Viewport.AspectRatio, -0.5f));
-
-                    // Set an effect parameter describing the current time. All the vertex
-                    // shader particle animation is keyed off this value.
-                    effectTimeParameter.SetValue(currentTime);
-
-                    // Set the particle vertex and index buffer.
-                    device.SetVertexBuffer(vertexBuffer);
-                    device.Indices = indexBuffer;
-
-                    // Activate the particle effect.
-
-                    foreach (EffectPass pass in particleEffect.CurrentTechnique.Passes)
+                    if (firstActiveParticle < firstFreeParticle)
                     {
-                        pass.Apply();
+                        // If the active particles are all in one consecutive range,
+                        // we can draw them all in a single call.
+                        device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0,
+                                                     firstActiveParticle * 6, (firstFreeParticle - firstActiveParticle) * 2);
+                    }
+                    else
+                    {
+                        // If the active particle range wraps past the end of the queue
+                        //// back to the start, we must split them over two draw calls.
+                        device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0,
+                                                     firstActiveParticle * 6, (settings.MaxParticles - firstActiveParticle) * 2);
 
-                        if (firstActiveParticle < firstFreeParticle)
+                        if (firstFreeParticle > 0)
                         {
-                            // If the active particles are all in one consecutive range,
-                            // we can draw them all in a single call.
                             device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0,
-                                firstActiveParticle * 4, (firstFreeParticle - firstActiveParticle) * 4,
-                                firstActiveParticle * 6, (firstFreeParticle - firstActiveParticle) * 2);
-                        }
-                        else
-                        {
-                            // If the active particle range wraps past the end of the queue
-                            // back to the start, we must split them over two draw calls.
-                            device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0,
-                                firstActiveParticle * 4, (settings.MaxParticles - firstActiveParticle) * 4,
-                                firstActiveParticle * 6, (settings.MaxParticles - firstActiveParticle) * 2);
-
-                            if (firstFreeParticle > 0)
-                            {
-                                device.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0,
-                                    0, firstFreeParticle * 4,
-                                    0, firstFreeParticle * 2);
-                            }
+                                                         0, firstFreeParticle * 2);
                         }
                     }
-
-                    // Reset a couple of the more unusual renderstates that we changed,
-                    // so as not to mess up any other subsequent drawing.
-                    device.DepthStencilState = DepthStencilState.Default;
                 }
 
-                drawCounter++;
+                // Reset some of the renderstates that we changed,
+                // so as not to mess up any other subsequent drawing.
+                device.DepthStencilState = DepthStencilState.Default;
             }
+
+            drawCounter++;
         }
 
 
@@ -463,22 +464,37 @@ namespace Biplane.ParticleSystem
         /// </summary>
         void AddNewParticlesToVertexBuffer()
         {
+            int stride = ParticleVertex.SizeInBytes;
+
+            if (firstNewParticle < firstFreeParticle)
+            {
+                // If the new particles are all in one consecutive range,
+                // we can upload them all in a single call.
+                vertexBuffer.SetData(firstNewParticle * stride * 4, particles,
+                                     firstNewParticle * 4,
+                                     (firstFreeParticle - firstNewParticle) * 4,
+                                     stride, SetDataOptions.NoOverwrite);
+            }
+            else
+            {
+                // If the new particle range wraps past the end of the queue
+                // back to the start, we must split them over two upload calls.
+                vertexBuffer.SetData(firstNewParticle * stride * 4, particles,
+                                     firstNewParticle * 4,
+                                     (settings.MaxParticles - firstNewParticle) * 4,
+                                     stride, SetDataOptions.NoOverwrite);
+
+                if (firstFreeParticle > 0)
+                {
+                    vertexBuffer.SetData(0, particles,
+                                         0, firstFreeParticle * 4,
+                                         stride, SetDataOptions.NoOverwrite);
+                }
+            }
+
+            // Move the particles we just uploaded from the new to the active queue.
             firstNewParticle = firstFreeParticle;
         }
-
-
-        /// <summary>
-        /// Helper for setting the renderstates used to draw particles.
-        /// </summary>
-        void SetParticleRenderStates(BlendState blendState, DepthStencilState depthStencilState)
-        {
-            // Enable the depth buffer (so particles will not be visible through
-            // solid objects like the ground plane), but disable depth writes
-            // (so particles will not obscure other particles).
-            blendState = BlendState.AlphaBlend;
-            depthStencilState = DepthStencilState.DepthRead;
-        }
-
 
         #endregion
 

@@ -16,7 +16,7 @@ using Microsoft.Xna.Framework.Graphics.PackedVector;
 namespace Biplane.ParticleSystem
 {
     /// <summary>
-    /// Custom vertex structure for drawing point sprite particles.
+    /// Custom vertex structure for drawing particles.
     /// </summary>
     struct ParticleVertex
     {
@@ -36,23 +36,20 @@ namespace Biplane.ParticleSystem
         public float Time;
 
 
-        // Describe the layout of this vertex structure.
-        public static readonly VertexElement[] VertexElements =
-        {
-            new VertexElement(0, VertexElementFormat.Vector3,
-                             VertexElementUsage.Position, 0),
-            new VertexElement(12, VertexElementFormat.Vector2,
-                             VertexElementUsage.Normal, 0),
-            new VertexElement(20, VertexElementFormat.Vector3,
-                             VertexElementUsage.Normal, 1),
-            new VertexElement(32, VertexElementFormat.Color,
-                             VertexElementUsage.Color, 0),
-            new VertexElement(36, VertexElementFormat.Single,
-                             VertexElementUsage.TextureCoordinate, 0)
-        };
+        public static readonly VertexDeclaration VertexDeclaration = new VertexDeclaration
+        (
+          new VertexElement(0, VertexElementFormat.Vector3,
+                                 VertexElementUsage.Position, 0),
+          new VertexElement(12, VertexElementFormat.Vector2,
+                                 VertexElementUsage.Normal, 0),
+          new VertexElement(20, VertexElementFormat.Vector3,
+                                 VertexElementUsage.Normal, 1),
+          new VertexElement(32, VertexElementFormat.Color,
+                                 VertexElementUsage.Color, 0),
+          new VertexElement(36, VertexElementFormat.Single,
+                                 VertexElementUsage.TextureCoordinate, 0)
+        );
 
-
-        // Describe the size of this vertex structure.
         public const int SizeInBytes = 40;
     }
 }

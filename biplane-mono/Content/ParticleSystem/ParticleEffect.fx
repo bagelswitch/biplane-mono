@@ -155,7 +155,6 @@ float2x2 ComputeParticleRotation(float randomValue, float age)
 }
 
 
-// Custom vertex shader animates particles entirely on the GPU.
 VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 {
     VertexShaderOutput output;
@@ -179,10 +178,9 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
     output.Position.xy += mul(input.Corner, rotation) * size * ViewportScale;
 
     output.Color = ComputeParticleColor(output.Position, input.Random.z, normalizedAge);
-
     output.TextureCoordinate = (input.Corner + 1) / 2;
 
-    output.Rotation = rotation;
+    //output.Rotation = rotation;
 
     return output;
 }

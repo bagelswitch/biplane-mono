@@ -55,8 +55,10 @@ namespace Biplane.ParticleSystem
             settings.MaxEndSize = 500;
 
             // Use additive blending.
-            settings.SourceBlend = Blend.SourceAlpha;
-            settings.DestinationBlend = Blend.One;
+            //settings.SourceBlend = Blend.SourceAlpha;
+            //settings.DestinationBlend = Blend.One;
+            settings.BlendState = BlendState.Additive;
+            settings.DepthStencilState = DepthStencilState.Default;
         }
     }
 }

@@ -104,7 +104,9 @@ namespace Biplane.ParticleSystem
 
 
         // Alpha blending settings.
-        public Blend SourceBlend = Blend.SourceAlpha;
-        public Blend DestinationBlend = Blend.InverseSourceAlpha;
+        //public Blend SourceBlend = Blend.SourceAlpha;
+        //public Blend DestinationBlend = Blend.InverseSourceAlpha;
+        public BlendState BlendState = BlendState.AlphaBlend;
+        public DepthStencilState DepthStencilState = DepthStencilState.DepthRead;
     }
 }
