@@ -186,7 +186,7 @@ VertexShaderOutput VertexShaderFunction(VertexShaderInput input)
 }
 
 // Pixel shader for drawing particles that do not rotate.
-float4 NonRotatingPixelShaderFunction(VertexShaderOutput input) : COLOR0
+float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
 {
     return tex2D(Sampler, input.TextureCoordinate) * input.Color;
 }
@@ -230,7 +230,7 @@ technique NonRotatingParticles
     pass P0
     {
         VertexShader = compile vs_4_0_level_9_1 VertexShaderFunction();
-        PixelShader = compile ps_4_0_level_9_1 NonRotatingPixelShaderFunction();
+        PixelShader = compile ps_4_0_level_9_1 PixelShaderFunction();
     }
 }
 
@@ -241,6 +241,6 @@ technique RotatingParticles
     pass P0
     {
         VertexShader = compile vs_4_0_level_9_1 VertexShaderFunction();
-        PixelShader = compile ps_4_0_level_9_1 RotatingPixelShaderFunction();
+        PixelShader = compile ps_4_0_level_9_1 PixelShaderFunction();
     }
 }

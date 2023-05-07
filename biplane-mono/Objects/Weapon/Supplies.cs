@@ -21,7 +21,7 @@ namespace Biplane.Objects.Weapon
         public Supplies(Game game) : base(game)
         {
             modelName = "Models\\parachute";
-            scale = 2.5f;
+            scale = 1.0f;
             useXEffects = true;
         }
 
