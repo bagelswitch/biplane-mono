@@ -57,7 +57,7 @@ namespace Biplane.ParticleSystem
             // Use additive blending.
             //settings.SourceBlend = Blend.SourceAlpha;
             //settings.DestinationBlend = Blend.One;
-            settings.BlendState = BlendState.Additive;
+            settings.BlendState = BlendState.NonPremultiplied;
             settings.DepthStencilState = DepthStencilState.Default;
         }
     }

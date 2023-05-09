@@ -56,7 +56,7 @@ namespace Biplane.ParticleSystem
             settings.MinEndSize = 500;
             settings.MaxEndSize = 1500;
 
-            settings.BlendState = BlendState.Additive;
+            settings.BlendState = BlendState.NonPremultiplied;
             settings.DepthStencilState = DepthStencilState.Default;
         }
     }

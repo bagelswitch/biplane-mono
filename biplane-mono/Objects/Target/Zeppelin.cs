@@ -40,7 +40,7 @@ namespace Biplane.Objects.Target
 
             this.target = null;
 
-            this.size = 4000;
+            this.size = 6000;
 
             this.damage = 200.0f;
 
