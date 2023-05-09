@@ -235,21 +235,39 @@ namespace Biplane.Objects.Player
                 else if (this.target != null && !this.target.destroyed)
                 {
                     float distance = Vector3.Distance(this.target.position, this.position);
-                    bool samedir = Math.Abs(MathHelper.ToDegrees((float) Math.Acos(Vector3.Dot(this.target.velocity, this.currentDirection)))) < 45;
-                    if (((distance < minDis && !samedir) || (distance < minDis / 2)) && !(this.target is Supplies))
+                    float targetAngle = Math.Abs(MathHelper.ToDegrees((float)Math.Acos(Vector3.Dot(this.target.velocity, this.currentDirection))));
+                    bool aggressive = this.damage - targetAngle > 0;
+                    float aggressionFactor = 4.5f - (this.damage / 25.0f);
+
+                    if (this.target is Supplies)
                     {
-                        turnAwayFromTarget(gameTime);
-                        this.target = null;
+                        turnTowardsTarget(gameTime);
+                    }
+                    else if (distance < (minDis * aggressionFactor))
+                    {
+                        if (!aggressive && (this.target is Aircraft))
+                        {
+                            turnAwayFromTarget(gameTime);
+                            this.target = null;
+                        }
                     }
                     else
                     {
-                        if (this.target is Flyer || this.bombCount < 1)
+                        if (this.target is Aircraft)
                         {
                             turnTowardsTarget(gameTime);
                         }
-                        else
+                        else if (this.target is Flyer)
+                        {
+                            turnTowardsTarget(gameTime);
+                        }
+                        else if (this.bombCount >= 1)
                         {
                             turnAboveTarget(gameTime);
+                        } else
+                        {
+                            turnAwayFromTarget(gameTime);
+                            this.target = null;
                         }
                     }
                 }
