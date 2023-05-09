@@ -56,23 +56,23 @@ namespace Biplane.Service
             : base(game)
         {
             UIobjects = new List<GameObject2D>();
-            UIobjects.Add(new UIBacking(new Rectangle(0, 500, 250, 75), Color.White));
-            UIobjects.Add(new UIBacking(new Rectangle(550, 500, 250, 75), Color.White));
+            UIobjects.Add(new UIBacking(new Rectangle(20, 950, 500, 75), Color.White));
+            UIobjects.Add(new UIBacking(new Rectangle(1400, 950, 500, 75), Color.White));
             UIobjects.Add(new Logo(new Rectangle(50, 50, 150, 50), Color.White));
 
             textList = new List<UIText>();
-            addText("", new Vector2(27, 502), Color.Black, 0.8f, false);
-            addText("", new Vector2(25, 500), Color.Red, 0.8f, false);
-            addText("", new Vector2(27, 522), Color.Black, 0.8f, false);
-            addText("", new Vector2(25, 520), Color.Red, 0.8f, false);
-            addText("", new Vector2(27, 542), Color.Black, 0.8f, false);
-            addText("", new Vector2(25, 540), Color.Red, 0.8f, false);
-            addText("", new Vector2(577, 502), Color.Black, 0.8f, false);
-            addText("", new Vector2(575, 500), Color.Blue, 0.8f, false);
-            addText("", new Vector2(577, 522), Color.Black, 0.8f, false);
-            addText("", new Vector2(575, 520), Color.Blue, 0.8f, false);
-            addText("", new Vector2(577, 542), Color.Black, 0.8f, false);
-            addText("", new Vector2(575, 540), Color.Blue, 0.8f, false);
+            addText("", new Vector2(47, 957), Color.Black, 0.8f, false);
+            addText("", new Vector2(45, 955), Color.Red, 0.8f, false);
+            addText("", new Vector2(47, 977), Color.Black, 0.8f, false);
+            addText("", new Vector2(45, 975), Color.Red, 0.8f, false);
+            addText("", new Vector2(47, 997), Color.Black, 0.8f, false);
+            addText("", new Vector2(45, 995), Color.Red, 0.8f, false);
+            addText("", new Vector2(1427, 957), Color.Black, 0.8f, false);
+            addText("", new Vector2(1425, 955), Color.Blue, 0.8f, false);
+            addText("", new Vector2(1427, 977), Color.Black, 0.8f, false);
+            addText("", new Vector2(1425, 975), Color.Blue, 0.8f, false);
+            addText("", new Vector2(1427, 997), Color.Black, 0.8f, false);
+            addText("", new Vector2(1425, 995), Color.Blue, 0.8f, false);
 
             sb = new StringBuilder();
 
