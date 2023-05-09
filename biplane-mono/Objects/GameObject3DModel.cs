@@ -236,6 +236,7 @@ namespace Biplane.Objects
             gd = game.GraphicsDevice;
             gd.BlendState = BlendState.AlphaBlend;
             gd.DepthStencilState = DepthStencilState.Default;
+            gd.RasterizerState = RasterizerState.CullNone;
 
             foreach (ModelMesh mesh in model.Meshes)
             {
